@@ -70,9 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTogglePassword: () => setState(
                                 () => _obscurePassword = !_obscurePassword,
                               ),
-                              onRememberChanged: (value) => setState(
-                                () => _rememberMe = value ?? false,
-                              ),
+                              onRememberChanged: (value) =>
+                                  setState(() => _rememberMe = value ?? false),
                               onLogin: _login,
                             ),
                           ),

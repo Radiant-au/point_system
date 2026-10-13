@@ -1,29 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../member/providers/member_provider.dart';
 
 class HomeContent extends StatelessWidget {
-  const HomeContent({super.key});
+  const HomeContent({super.key, required this.onOpenMemberCard});
+
+  final VoidCallback onOpenMemberCard;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360),
-        child: const Padding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PromotionCard(),
-              SizedBox(height: 16),
-              Text(
+              const _PromotionCard(),
+              const SizedBox(height: 16),
+              const Text(
                 'My Card',
                 style: TextStyle(color: Colors.black, fontSize: 14),
               ),
-              SizedBox(height: 4),
-              _MembershipCard(),
+              const SizedBox(height: 4),
+              Semantics(
+                button: true,
+                label: 'Open member card',
+                child: GestureDetector(
+                  onTap: onOpenMemberCard,
+                  child: const _MembershipCard(),
+                ),
+              ),
             ],
           ),
         ),
@@ -36,31 +47,26 @@ class _PromotionCard extends StatelessWidget {
   const _PromotionCard();
 
   @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: SizedBox(
-        height: 165,
-        width: double.infinity,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Positioned(
-              left: -33,
-              top: -64,
-              width: 405,
-              height: 304,
-              child: Image.asset(
-                'assets/images/promotion_photo.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Align(
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(16),
+    child: Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/promotion_photo.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 165),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 16, 44),
+            child: Align(
               alignment: Alignment.centerLeft,
+              heightFactor: 1,
               child: Container(
                 width: 213,
                 padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(left: 20),
                 decoration: BoxDecoration(
                   color: const Color(0x66893813),
                   borderRadius: BorderRadius.circular(8),
@@ -90,37 +96,37 @@ class _PromotionCard extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: 24,
-              child: ColoredBox(
-                color: const Color(0x66893813),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    const _PageDot(),
-                    const SizedBox(width: 6),
-                    const _PageDot(),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 24,
+          child: ColoredBox(
+            color: const Color(0x66893813),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 24,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const _PageDot(),
+                const SizedBox(width: 6),
+                const _PageDot(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _PageDot extends StatelessWidget {
@@ -139,13 +145,14 @@ class _PageDot extends StatelessWidget {
   }
 }
 
-class _MembershipCard extends StatelessWidget {
+class _MembershipCard extends ConsumerWidget {
   const _MembershipCard();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final member = ref.watch(memberProvider);
     return Container(
-      height: 184,
+      constraints: const BoxConstraints(minHeight: 184),
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -192,6 +199,7 @@ class _MembershipCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -235,25 +243,25 @@ class _MembershipCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  '1900 1900 0095 6102',
-                  style: TextStyle(
+                Text(
+                  member.formattedId,
+                  style: const TextStyle(
                     color: Color(0xFF1E2939),
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     letterSpacing: .9,
                   ),
                 ),
-                const Spacer(),
-                const Row(
+                const SizedBox(height: 20),
+                Row(
                   children: [
                     Expanded(
                       child: _CardDetail(
                         label: 'CARD HOLDER',
-                        value: 'Tint Zaw Htun',
+                        value: member.name,
                       ),
                     ),
-                    _CardDetail(label: 'TYPE', value: 'Platinum'),
+                    _CardDetail(label: 'TYPE', value: member.type),
                   ],
                 ),
               ],
@@ -274,9 +282,9 @@ class _CardDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: label == 'TYPE' ? 
-      CrossAxisAlignment.end : 
-      CrossAxisAlignment.start,
+      crossAxisAlignment: label == 'TYPE'
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(color: AppTheme.muted, fontSize: 9)),
         const SizedBox(height: 4),
