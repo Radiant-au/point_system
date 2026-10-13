@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../expiry/screens/expiry_details_screen.dart';
 import '../../history/screens/history_screen.dart';
 import '../../member/screens/member_card_screen.dart';
 import '../../profile/screens/profile_screen.dart';
@@ -20,6 +21,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTab = 0;
+  bool _showExpiry = false;
+
+  void _openExpiry() => setState(() {
+    _selectedTab = 0;
+    _showExpiry = true;
+  });
 
   void _openMemberCard() => Navigator.of(context)
       .push(MaterialPageRoute<void>(builder: (_) => const MemberCardScreen()));
@@ -28,7 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (index == 4) {
       _openMemberCard();
     } else {
-      setState(() => _selectedTab = index);
+      setState(() {
+        _selectedTab = index;
+        _showExpiry = false;
+      });
     }
   }
 
@@ -36,9 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) => PopScope<void>(
-    canPop: _selectedTab == 0,
+    canPop: _selectedTab == 0 && !_showExpiry,
     onPopInvokedWithResult: (didPop, result) {
-      if (!didPop && _selectedTab != 0) _goHome();
+      if (!didPop && (_selectedTab != 0 || _showExpiry)) _goHome();
     },
     child: Scaffold(
       backgroundColor: AppTheme.canvas,
@@ -51,11 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SafeArea(
           bottom: false,
           child: IndexedStack(
-            index: _selectedTab,
+            index: _showExpiry ? 4 : _selectedTab,
             children: [
               CustomScrollView(
                 slivers: [
-                  const SliverToBoxAdapter(child: HomePointsHeader()),
+                  SliverToBoxAdapter(
+                    child: HomePointsHeader(onOpenExpiry: _openExpiry),
+                  ),
                   SliverToBoxAdapter(
                     child: HomeContent(onOpenMemberCard: _openMemberCard),
                   ),
@@ -64,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               RewardsScreen(onBack: _goHome),
               HistoryScreen(onBack: _goHome),
               const ProfileScreen(),
+              ExpiryDetailsScreen(onBack: _goHome),
             ],
           ),
         ),

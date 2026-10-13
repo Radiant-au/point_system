@@ -14,7 +14,8 @@ flutter run
 Splash opens Login. A valid phone number (7–15 digits) and any non-empty password
 enter the demo. Bottom navigation opens Home, Rewards, History, and Profile.
 The center QR button and the Home membership card open Member Card. Back returns
-to the previous tab; the tab headers return to Home. Sign Out clears the route
+to the previous tab; the tab headers return to Home. Tap the Home expiry card
+to open Points Expiry Details with the same bottom navigation. Sign Out clears the route
 stack and returns to Login.
 
 ## Where to learn and edit
@@ -26,7 +27,11 @@ stack and returns to Login.
 | `core/theme/app_theme.dart` | Shared colors and input styling |
 | `core/widgets/reward_widgets.dart` | Shared page header, white card, and gradient button |
 | `features/home/screens/home_screen.dart` | Tab navigation and member-card route |
-| `features/home/widgets/` | Existing Home promotion/card and active-points header |
+| `features/home/widgets/` | Home promotion/card and point header |
+| `features/expiry/models/point_expiry_group.dart` | Point groups, calendar-day countdown, and next-30-days summary |
+| `features/expiry/providers/expiry_provider.dart` | Mock expiry repository, async Riverpod state, and derived total |
+| `features/expiry/screens/expiry_details_screen.dart` | Expiry total, dates, countdown, loading/retry, and pull-to-refresh |
+| `features/expiry/widgets/home_expiry_card.dart` | Home warning that reads the same expiry state |
 | `features/points/providers/points_provider.dart` | Mock points repository and async Riverpod state |
 | `features/points/widgets/point_balance.dart` | Shared balance, loading/error state, and refresh action |
 | `features/member/providers/member_provider.dart` | Demo member details shared by Home, Profile, and QR |
@@ -50,9 +55,25 @@ Change the mock balance in `PointsRepository`, member details in `memberProvider
 and transaction rows in `historyProvider`. The history uses valid dates, including
 `25/03/2026` in place of the screenshot's `25/30/2026`.
 
+### How Riverpod expiry works
+
+`expiryGroupsProvider` loads point groups from `PointExpiryRepository.fetchGroups()`.
+`expirySummaryProvider` derives the total and sorted positive groups expiring from
+**today through 30 days ahead**, inclusive. Expired groups and later dates are
+excluded. Home and Points Expiry Details watch this same summary, so refreshing
+the details page updates both screens. An empty result restores Home's active-points
+notice. A failed refresh retains the previous groups and offers Retry.
+
+The demo contains 120 and 200 points, each expiring 25 calendar days from the fetch
+date. Dates use `DD/MM/YYYY`; countdowns compare calendar days, not elapsed hours.
+Pull down the details page to refresh. Replace `fetchGroups()` with your API later.
+`expiryClockProvider` can be overridden in tests to reproduce the screenshot's
+30/04/2026 date and 25-day countdown without hardcoding expired April dates in the
+running app. Sign Out also clears expiry state.
+
 ## Demo boundaries
 
-Login, points, history, and password reset are local demonstrations. Password reset
+Login, points, expiry, history, and password reset are local demonstrations. Password reset
 checks eight characters, an uppercase letter, a number, and matching confirmation,
 then shows the supplied success dialog; it does not change or store credentials.
 No backend, persistent session, or checkout redemption API is connected. The QR
@@ -69,4 +90,6 @@ flutter test
 
 Tests cover shared point refresh and error retry, tab navigation, member QR data,
 password validation and success, sign out, and compact layouts with a keyboard.
+Expiry tests cover the 30-day window, leap-year countdowns, shared Home/detail
+refresh, error recovery, empty results, and system Back navigation.
 GitHub Actions runs formatting, analysis, and tests on pull requests.

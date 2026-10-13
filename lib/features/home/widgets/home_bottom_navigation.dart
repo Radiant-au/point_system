@@ -116,7 +116,12 @@ class _NavItem extends StatelessWidget {
         children: [
           Icon(icon, size: 26, color: color),
           const SizedBox(height: 2),
-          Text(label, style: TextStyle(color: color, fontSize: 12, height: 1)),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: color, fontSize: 12, height: 1),
+          ),
         ],
       ),
     );

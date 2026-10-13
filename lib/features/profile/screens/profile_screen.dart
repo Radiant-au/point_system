@@ -6,6 +6,7 @@ import '../../../core/widgets/reward_widgets.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../auth/screens/reset_password_screen.dart';
 import '../../member/providers/member_provider.dart';
+import '../../expiry/providers/expiry_provider.dart';
 import '../../points/providers/points_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -117,6 +118,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   onTap: () {
                     ref.invalidate(pointsProvider);
+                    ref.invalidate(expiryGroupsProvider);
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute<void>(
                         builder: (_) => const LoginScreen(),
