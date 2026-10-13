@@ -74,10 +74,13 @@ class HomeBottomNavigation extends StatelessWidget {
                       elevation: 4,
                     ),
                     onPressed: () => onSelected(4),
-                    child: const Icon(
-                      Icons.qr_code_2,
-                      color: Colors.white,
-                      size: 28,
+                    child: Semantics(
+                      label: 'Member Card',
+                      child: const Icon(
+                        Icons.qr_code_2,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                   ),
                 ),
@@ -113,10 +116,7 @@ class _NavItem extends StatelessWidget {
         children: [
           Icon(icon, size: 26, color: color),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(color: color, fontSize: 12, height: 1),
-          ),
+          Text(label, style: TextStyle(color: color, fontSize: 12, height: 1)),
         ],
       ),
     );

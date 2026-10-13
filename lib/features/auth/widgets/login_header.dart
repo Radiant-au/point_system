@@ -19,7 +19,7 @@ class LoginHeader extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration  : BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: const [
