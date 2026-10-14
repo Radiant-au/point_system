@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/rewards_load_state.dart';
 import '../../../core/widgets/reward_widgets.dart';
 import '../../points/widgets/point_balance.dart';
 import '../providers/member_provider.dart';
@@ -13,6 +14,7 @@ class MemberCardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final member = ref.watch(memberProvider);
+    if (member == null) return const RewardsLoadState();
     return Scaffold(
       body: SafeArea(
         child: Column(

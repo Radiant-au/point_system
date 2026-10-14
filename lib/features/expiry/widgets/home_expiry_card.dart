@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/data/rewards_provider.dart';
 import '../../../core/widgets/reward_widgets.dart';
 import '../providers/expiry_provider.dart';
 
@@ -11,7 +12,7 @@ class HomeExpiryCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(expiryGroupsProvider);
+    final state = ref.watch(rewardsProvider);
     final summary = ref.watch(expirySummaryProvider);
     final expiring = summary != null && summary.totalPoints > 0;
     final color = expiring ? const Color(0xFFFF4D00) : const Color(0xFF00B83E);

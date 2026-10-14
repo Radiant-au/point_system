@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/data/rewards_provider.dart';
 import '../providers/points_provider.dart';
 
 class PointBalance extends ConsumerWidget {
@@ -11,6 +12,7 @@ class PointBalance extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(pointsProvider);
+    final state = ref.watch(rewardsProvider);
     final color = onBlue ? Colors.white : AppTheme.blue;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -23,7 +25,7 @@ class PointBalance extends ConsumerWidget {
           children: [
             Flexible(
               child: Text(
-                balance.value?.toString() ?? '—',
+                balance?.toString() ?? '—',
                 key: Key(
                   onBlue ? 'home-point-balance' : 'member-point-balance',
                 ),
@@ -49,10 +51,10 @@ class PointBalance extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: balance.isLoading
+                onPressed: state.isLoading
                     ? null
-                    : () => ref.read(pointsProvider.notifier).refresh(),
-                icon: balance.isLoading
+                    : () => ref.read(rewardsProvider.notifier).refresh(),
+                icon: state.isLoading
                     ? SizedBox(
                         width: 16,
                         height: 16,
@@ -66,7 +68,7 @@ class PointBalance extends ConsumerWidget {
             ),
           ],
         ),
-        if (balance.hasError)
+        if (state.hasError)
           Text(
             'Could not refresh points. Tap refresh to retry.',
             style: TextStyle(color: color, fontSize: 11),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/data/rewards_provider.dart';
 import '../../../core/widgets/reward_widgets.dart';
 import '../models/point_expiry_group.dart';
 import '../providers/expiry_provider.dart';
@@ -12,9 +13,9 @@ class ExpiryDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(expiryGroupsProvider);
+    final state = ref.watch(rewardsProvider);
     final summary = ref.watch(expirySummaryProvider);
-    final refresh = ref.read(expiryGroupsProvider.notifier).refresh;
+    final refresh = ref.read(rewardsProvider.notifier).refresh;
     return Column(
       children: [
         RewardPageHeader(title: 'Points Expiry Details', onBack: onBack),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/rewards_load_state.dart';
+import '../../../core/data/rewards_provider.dart';
+import '../models/point_transaction.dart';
 import '../../../core/widgets/reward_widgets.dart';
 import '../providers/history_provider.dart';
 
@@ -12,18 +15,23 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transactions = ref.watch(historyProvider);
+    if (transactions == null) return const RewardsLoadState();
     return Column(
       children: [
         RewardPageHeader(title: 'Point History', onBack: onBack),
         Expanded(
           child: transactions.isEmpty
               ? const Center(child: Text('No point history yet.'))
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
-                  itemCount: transactions.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) =>
-                      _TransactionCard(transaction: transactions[index]),
+              : RefreshIndicator(
+                  onRefresh: ref.read(rewardsProvider.notifier).refresh,
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+                    itemCount: transactions.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) =>
+                        _TransactionCard(transaction: transactions[index]),
+                  ),
                 ),
         ),
       ],
