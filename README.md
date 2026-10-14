@@ -25,6 +25,16 @@ Login and password reset remain UI demonstrations; no credentials are stored.
 SQLite runs on Android, iOS, macOS, Linux, and Windows. Mobile/macOS use `sqflite`;
 Linux/Windows use `sqflite_common_ffi`. Browser SQLite is not configured.
 
+## Home promotions
+
+Home uses Flutter's `PageView` for three swipeable demo offers, with smooth
+indicator navigation and animated dots. Network photos come from Unsplash; the
+bundled photo stays visible while loading or when offline. Edit `homePromotions`
+in `lib/features/home/widgets/promotion_carousel.dart` to change the offers and
+image URLs. Large text expands the banner, and reduced motion disables indicator
+animations. The page index belongs to the widget; shared rewards data stays in
+Riverpod.
+
 ## Connect a Dio API
 
 ```bash

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/rewards_load_state.dart';
 import '../../member/providers/member_provider.dart';
+import 'promotion_carousel.dart';
 
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key, required this.onOpenMemberCard});
@@ -21,7 +22,7 @@ class HomeContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _PromotionCard(),
+              const PromotionCarousel(),
               const SizedBox(height: 16),
               const Text(
                 'My Card',
@@ -39,108 +40,6 @@ class HomeContent extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _PromotionCard extends StatelessWidget {
-  const _PromotionCard();
-
-  @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(16),
-    child: Stack(
-      children: [
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/promotion_photo.jpg',
-            fit: BoxFit.cover,
-          ),
-        ),
-        ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 165),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 16, 44),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              heightFactor: 1,
-              child: Container(
-                width: 213,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0x66893813),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Double Points Weekend',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Earn 2x points on all purchases this weekend!',
-                      style: TextStyle(
-                        color: Color(0xE6FFFFFF),
-                        fontSize: 12,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 24,
-          child: ColoredBox(
-            color: const Color(0x66893813),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 24,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const _PageDot(),
-                const SizedBox(width: 6),
-                const _PageDot(),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class _PageDot extends StatelessWidget {
-  const _PageDot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .5),
-        shape: BoxShape.circle,
       ),
     );
   }
