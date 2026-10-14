@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/rewards_load_state.dart';
 import '../../member/providers/member_provider.dart';
 
 class HomeContent extends StatelessWidget {
@@ -151,6 +152,7 @@ class _MembershipCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final member = ref.watch(memberProvider);
+    if (member == null) return const RewardsLoadState();
     return Container(
       constraints: const BoxConstraints(minHeight: 184),
       width: double.infinity,

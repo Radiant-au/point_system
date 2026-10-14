@@ -1,5 +1,11 @@
 class PointExpiryGroup {
-  const PointExpiryGroup({required this.points, required this.expiryDate});
+  const PointExpiryGroup({
+    this.id = '',
+    required this.points,
+    required this.expiryDate,
+  });
+
+  final String id;
 
   final int points;
   final DateTime expiryDate;
@@ -14,6 +20,11 @@ class PointExpiryGroup {
     final currentDay = DateTime.utc(today.year, today.month, today.day);
     return expiryDay.difference(currentDay).inDays;
   }
+
+  String get isoDate =>
+      '${expiryDate.year.toString().padLeft(4, '0')}-'
+      '${expiryDate.month.toString().padLeft(2, '0')}-'
+      '${expiryDate.day.toString().padLeft(2, '0')}';
 
   String get formattedDate =>
       '${expiryDate.day.toString().padLeft(2, '0')}/'

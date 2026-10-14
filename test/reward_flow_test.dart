@@ -5,23 +5,20 @@ import 'package:point_system/core/theme/app_theme.dart';
 import 'package:point_system/features/auth/screens/login_screen.dart';
 import 'package:point_system/features/auth/screens/reset_password_screen.dart';
 import 'package:point_system/features/home/screens/home_screen.dart';
-import 'package:point_system/features/points/providers/points_provider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:point_system/core/data/rewards_provider.dart';
 
-class DemoPointsRepository extends PointsRepository {
-  int balance = 1450;
-  @override
-  Future<int> fetchBalance() async => balance;
-}
+import 'support/demo_repository.dart';
+
+import 'package:qr_flutter/qr_flutter.dart';
 
 void main() {
   testWidgets('tabs, QR, shared point refresh, back, and sign out work', (
     tester,
   ) async {
-    final repository = DemoPointsRepository();
+    final repository = DemoRewardsRepository();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [pointsRepositoryProvider.overrideWithValue(repository)],
+        overrides: [rewardsRepositoryProvider.overrideWithValue(repository)],
         child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),
       ),
     );
@@ -121,7 +118,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            pointsRepositoryProvider.overrideWithValue(DemoPointsRepository()),
+            rewardsRepositoryProvider.overrideWithValue(
+              DemoRewardsRepository(),
+            ),
           ],
           child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),
         ),

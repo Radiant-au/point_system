@@ -33,6 +33,11 @@ dependencies:
   flutter_svg: ^2.3.0
   flutter_riverpod: ^3.0.0
   qr_flutter: ^4.1.0
+  dio: ^5.9.0
+  sqflite: ^2.4.2
+  sqflite_common_ffi: ^2.4.3
+  path: ^1.9.1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +64,7 @@ flutter:
     - assets/icons/galaxy_reward_splash.svg
     - assets/icons/galaxy_reward_login.svg
     - assets/images/promotion_photo.jpg
+    - assets/database/schema.sql
 
   # To add assets to your application, add an assets section, like this:
   # assets:

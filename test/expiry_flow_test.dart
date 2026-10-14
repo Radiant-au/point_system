@@ -4,26 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:point_system/core/theme/app_theme.dart';
 import 'package:point_system/features/expiry/models/point_expiry_group.dart';
 import 'package:point_system/features/expiry/providers/expiry_provider.dart';
+import 'package:point_system/core/data/rewards_provider.dart';
+
+import 'support/demo_repository.dart';
+
 import 'package:point_system/features/home/screens/home_screen.dart';
 
-class DemoExpiryRepository extends PointExpiryRepository {
-  bool offline = false;
-  List<PointExpiryGroup> groups = [
-    PointExpiryGroup(points: 120, expiryDate: DateTime(2026, 4, 30)),
-    PointExpiryGroup(points: 200, expiryDate: DateTime(2026, 4, 30)),
-  ];
-
-  @override
-  Future<List<PointExpiryGroup>> fetchGroups() async {
-    if (offline) throw Exception('Offline');
-    return groups;
-  }
-}
-
-Widget app(DemoExpiryRepository repository, {double textScale = 1}) =>
+Widget app(DemoRewardsRepository repository, {double textScale = 1}) =>
     ProviderScope(
       overrides: [
-        expiryRepositoryProvider.overrideWithValue(repository),
+        rewardsRepositoryProvider.overrideWithValue(repository),
         expiryClockProvider.overrideWithValue(() => DateTime(2026, 4, 5)),
       ],
       child: MaterialApp(
@@ -41,7 +31,7 @@ void main() {
   testWidgets(
     'Home opens expiry details, refresh updates both views, and empty state returns',
     (tester) async {
-      final repository = DemoExpiryRepository();
+      final repository = DemoRewardsRepository();
       await tester.pumpWidget(app(repository));
       await tester.pumpAndSettle();
       expect(find.text('320 Points'), findsOneWidget);
@@ -82,16 +72,17 @@ void main() {
   );
 
   testWidgets('initial load error offers retry and recovers', (tester) async {
-    final repository = DemoExpiryRepository()..offline = true;
+    final repository = DemoRewardsRepository()..offline = true;
     await tester.pumpWidget(app(repository));
     await tester.pumpAndSettle();
-    expect(find.text('Could not load expiry details.'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('home-expiry-card')));
-    await tester.pumpAndSettle();
-    expect(find.text('Could not refresh expiry details.'), findsOneWidget);
+    expect(find.text('Could not load rewards.'), findsOneWidget);
     repository.offline = false;
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
+    expect(find.text('320 Points'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('home-expiry-card')));
+    await tester.pumpAndSettle();
+    expect(find.text('Points Expiry Details'), findsOneWidget);
     expect(find.text('320 Points'), findsOneWidget);
     expect(find.text('Retry'), findsNothing);
     expect(tester.takeException(), isNull);
@@ -104,7 +95,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(app(DemoExpiryRepository(), textScale: 1.3));
+      await tester.pumpWidget(app(DemoRewardsRepository(), textScale: 1.3));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('home-expiry-card')));
       await tester.pumpAndSettle();
