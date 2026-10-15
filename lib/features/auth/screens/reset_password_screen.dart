@@ -56,9 +56,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       ref.read(authSessionProvider).clear();
       ref.invalidate(memberDataProvider);
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(apiErrorMessage(error))));
+      }
       return;
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -101,11 +102,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ),
       ),
     );
-    if (mounted)
+    if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
         (_) => false,
       );
+    }
   }
 
   @override
