@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/data/member_data_provider.dart';
+import '../../../core/network/auth_session.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../home/screens/home_screen.dart';
 import '../widgets/login_form_card.dart';
@@ -33,21 +34,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_submitting || !_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _submitting = true);
-    final valid = await ref.read(appDatabaseProvider).authenticate(
-      _phone.text,
-      _password.text,
-    );
-    if (!mounted) return;
-    setState(() => _submitting = false);
-    if (!valid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Phone number or password is incorrect')),
-      );
+    try {
+      await ref
+          .read(authSessionProvider)
+          .login(
+            ref.read(dioProvider),
+            _phone.text,
+            _password.text,
+            _rememberMe,
+          );
+      ref.invalidate(memberRepositoryProvider);
+      ref.invalidate(memberDataProvider);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(apiErrorMessage(error))));
       return;
+    } finally {
+      if (mounted) setState(() => _submitting = false);
     }
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(builder: (_) => const HomeScreen()),
     );

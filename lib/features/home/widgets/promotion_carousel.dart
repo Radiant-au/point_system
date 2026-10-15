@@ -52,7 +52,11 @@ class _PromotionCarouselState extends State<PromotionCarousel> {
     _autoSwipe = Timer.periodic(const Duration(seconds: 2), (_) {
       if (!_controller.hasClients) return;
       final next = (_currentPage + 1) % homePromotions.length;
-      _controller.animateToPage(next, duration: const Duration(milliseconds: 450), curve: Curves.easeInOutCubic);
+      _controller.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOutCubic,
+      );
     });
   }
 

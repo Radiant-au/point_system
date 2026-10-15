@@ -7,8 +7,13 @@ import 'database_location.dart';
 import 'password_hash.dart';
 
 class AppDatabase {
-  AppDatabase({this.factory, this.path, DateTime Function()? clock})
-    : _clock = clock ?? DateTime.now;
+  AppDatabase({
+    this.factory,
+    this.path,
+    this.seedDemoData = false,
+    DateTime Function()? clock,
+  }) : _clock = clock ?? DateTime.now;
+  final bool seedDemoData;
   final DatabaseFactory? factory;
   final String? path;
   final DateTime Function() _clock;
@@ -39,6 +44,7 @@ class AppDatabase {
           for (final sql in schema.split(';')) {
             if (sql.trim().isNotEmpty) await db.execute(sql);
           }
+          if (!seedDemoData) return;
           // onCreate already runs in a transaction. Seed only on first creation.
           await _write(db, createInitialMemberData(_clock()));
           final password = await hashPassword(initialPassword);
@@ -72,10 +78,13 @@ class AppDatabase {
                 password TEXT NOT NULL
               )
             ''');
-            await db.execute('''
+            await db.execute(
+              '''
               INSERT INTO member_credentials (member_id, password)
               SELECT ?, password FROM old_member_credentials LIMIT 1
-            ''', [initialMemberId]);
+            ''',
+              [initialMemberId],
+            );
             await db.execute('DROP TABLE old_member_credentials');
           }
           if (oldVersion < 4) {
@@ -99,14 +108,23 @@ class AppDatabase {
             );
           }
           if (oldVersion < 5) {
-            await db.execute('ALTER TABLE members ADD COLUMN password_salt TEXT');
-            await db.execute('ALTER TABLE members ADD COLUMN password_hash TEXT');
+            await db.execute(
+              'ALTER TABLE members ADD COLUMN password_salt TEXT',
+            );
+            await db.execute(
+              'ALTER TABLE members ADD COLUMN password_hash TEXT',
+            );
             final credentials = await db.query('member_credentials');
             for (final credential in credentials) {
-              final password = await hashPassword(credential['password']! as String);
+              final password = await hashPassword(
+                credential['password']! as String,
+              );
               await db.update(
                 'members',
-                {'password_salt': password.salt, 'password_hash': password.hash},
+                {
+                  'password_salt': password.salt,
+                  'password_hash': password.hash,
+                },
                 where: 'id = ?',
                 whereArgs: [credential['member_id']],
               );
@@ -115,7 +133,10 @@ class AppDatabase {
               final password = await hashPassword(initialPassword);
               await db.update(
                 'members',
-                {'password_salt': password.salt, 'password_hash': password.hash},
+                {
+                  'password_salt': password.salt,
+                  'password_hash': password.hash,
+                },
                 where: 'id = ?',
                 whereArgs: [initialMemberId],
               );
@@ -234,8 +255,12 @@ class AppDatabase {
       'phone': member.phone,
       'membership_type': member.type,
       'points_balance': snapshot.balance,
-      'password_salt': existing.isEmpty ? null : existing.single['password_salt'],
-      'password_hash': existing.isEmpty ? null : existing.single['password_hash'],
+      'password_salt': existing.isEmpty
+          ? null
+          : existing.single['password_salt'],
+      'password_hash': existing.isEmpty
+          ? null
+          : existing.single['password_hash'],
     }, conflictAlgorithm: ConflictAlgorithm.replace);
     // Foreign-key cascading removes this member's old child rows before insertion.
     for (final row in snapshot.transactions) {

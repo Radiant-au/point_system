@@ -32,7 +32,9 @@ void main() {
     );
     addTearDown(container.dispose);
     final initial = container.read(memberDataProvider.future);
-    repository.requests.first.complete(createInitialMemberData(DateTime(2026, 4, 5)));
+    repository.requests.first.complete(
+      createInitialMemberData(DateTime(2026, 4, 5)),
+    );
     await initial;
     expect(container.read(pointsProvider), 1450);
     expect(container.read(expirySummaryProvider)!.totalPoints, 320);

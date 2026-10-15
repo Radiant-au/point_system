@@ -130,3 +130,33 @@ and cache updates. Dio adapter tests check requests, fallback, authentication
 errors, and invalid responses. A SQLite-backed widget test verifies data reaches
 Home, History, Profile, and expiry. Provider tests cover shared refresh and error
 retention; existing navigation, QR, password-form, and compact-screen checks remain.
+
+## .NET backend integration
+
+Run migrations and the manual `--seed-demo` command in `dotnet_point_system` first.
+The demo phone is `09123456789`; use the password supplied to the seed command.
+
+```bash
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:5297/api/
+```
+
+Use `http://127.0.0.1:5297/api/` on Linux desktop, or your server's LAN IP on a
+physical phone. The server must listen on an interface reachable by the device.
+Android debug builds permit local HTTP; use HTTPS for production.
+
+Login uses `/api/auth/login`; the returned member ID selects the rewards endpoint
+and SQLite cache. Password changes use `/api/auth/change-password` and require a
+new login. Logout revokes the bearer token when the server is reachable and always
+clears the local session. Tokens stay in memory, so each app restart requires login.
+Remember me requests the backend's 30-day token lifetime; it does not persist login
+across restarts. Passwords and tokens are never saved in SQLite.
+
+Rewards are fetched from the API and atomically saved to SQLite. Network failures
+and server errors can fall back to that member's saved snapshot. Authentication
+errors never fall back to cached data. Refresh retries the API. Fresh installations
+no longer seed local demo data; the backend owns accounts and point balances.
+Offline login and offline point mutations are not supported. POS earning and
+redemption remain server-authorized admin operations.
+
+Validation commands: `flutter analyze` and `flutter test`.
