@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 
@@ -6,12 +7,12 @@ class Promotion {
   const Promotion({
     required this.title,
     required this.description,
-    required this.imageUrl,
+    required this.imageAsset,
   });
 
   final String title;
   final String description;
-  final String imageUrl;
+  final String imageAsset;
 }
 
 // Demo offers: replace these with your own promotion content when available.
@@ -19,17 +20,17 @@ const homePromotions = [
   Promotion(
     title: 'Double Points Weekend',
     description: 'Earn 2x points on all purchases this weekend!',
-    imageUrl: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=900&q=80',
+    imageAsset: 'assets/images/promotion_photo_1.jpg',
   ),
   Promotion(
     title: 'Coffee & Rewards',
     description: 'Enjoy your favourite coffee and collect points.',
-    imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
+    imageAsset: 'assets/images/promotion_photo_2.png',
   ),
   Promotion(
     title: 'Member Specials',
     description: 'Discover something special on your next visit.',
-    imageUrl: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=900&q=80',
+    imageAsset: 'assets/images/promotion_photo_3.png',
   ),
 ];
 
@@ -43,9 +44,21 @@ class PromotionCarousel extends StatefulWidget {
 class _PromotionCarouselState extends State<PromotionCarousel> {
   final _controller = PageController();
   int _currentPage = 0;
+  Timer? _autoSwipe;
+
+  @override
+  void initState() {
+    super.initState();
+    _autoSwipe = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (!_controller.hasClients) return;
+      final next = (_currentPage + 1) % homePromotions.length;
+      _controller.animateToPage(next, duration: const Duration(milliseconds: 450), curve: Curves.easeInOutCubic);
+    });
+  }
 
   @override
   void dispose() {
+    _autoSwipe?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -124,7 +137,7 @@ class _PromotionCarouselState extends State<PromotionCarousel> {
                             behavior: HitTestBehavior.opaque,
                             onTap: () => _selectPage(index),
                             child: SizedBox(
-                              width: 48,
+                              width: 24,
                               height: 48,
                               child: Center(
                                 child: AnimatedContainer(
@@ -174,23 +187,14 @@ class _PromotionSlide extends StatelessWidget {
 
   final Promotion promotion;
 
-  Widget _fallback() => Image.asset(
-    'assets/images/promotion_photo.jpg',
-    fit: BoxFit.cover,
-    excludeFromSemantics: true,
-  );
-
   @override
   Widget build(BuildContext context) => Stack(
     fit: StackFit.expand,
     children: [
-      Image.network(
-        promotion.imageUrl,
+      Image.asset(
+        promotion.imageAsset,
         fit: BoxFit.cover,
         excludeFromSemantics: true,
-        loadingBuilder: (context, child, progress) =>
-            progress == null ? child : _fallback(),
-        errorBuilder: (context, error, stackTrace) => _fallback(),
       ),
       const DecoratedBox(
         decoration: BoxDecoration(

@@ -1,21 +1,23 @@
 import '../../features/expiry/models/point_expiry_group.dart';
 import '../../features/history/models/point_transaction.dart';
 import '../../features/member/models/member.dart';
-import 'rewards_snapshot.dart';
+import 'member_snapshot.dart';
 
-const demoMemberId = '1900190000956102';
+const initialMemberId = '1900190000956102';
+const initialPhone = '09123456789';
+const initialPassword = 'Galaxy123';
 
-RewardsSnapshot createDemoRewards(DateTime createdAt) {
+MemberSnapshot createInitialMemberData(DateTime createdAt) {
   final expiryDate = DateTime(
     createdAt.year,
     createdAt.month,
     createdAt.day + 25,
   );
-  return RewardsSnapshot(
+  return MemberSnapshot(
     member: const Member(
-      id: demoMemberId,
+      id: initialMemberId,
       name: 'Tint Zaw Htun',
-      phone: '+959 780 131 914',
+      phone: initialPhone,
       type: 'Platinum',
     ),
     balance: 1450,

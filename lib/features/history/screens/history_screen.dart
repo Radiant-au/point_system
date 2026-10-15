@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/rewards_load_state.dart';
-import '../../../core/data/rewards_provider.dart';
+import '../../../core/widgets/member_data_load_state.dart';
+import '../../../core/data/member_data_provider.dart';
 import '../models/point_transaction.dart';
 import '../../../core/widgets/reward_widgets.dart';
 import '../providers/history_provider.dart';
@@ -15,7 +15,7 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transactions = ref.watch(historyProvider);
-    if (transactions == null) return const RewardsLoadState();
+    if (transactions == null) return const MemberDataLoadState();
     return Column(
       children: [
         RewardPageHeader(title: 'Point History', onBack: onBack),
@@ -23,7 +23,7 @@ class HistoryScreen extends ConsumerWidget {
           child: transactions.isEmpty
               ? const Center(child: Text('No point history yet.'))
               : RefreshIndicator(
-                  onRefresh: ref.read(rewardsProvider.notifier).refresh,
+                  onRefresh: ref.read(memberDataProvider.notifier).refresh,
                   child: ListView.separated(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),

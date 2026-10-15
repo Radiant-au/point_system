@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:point_system/core/data/demo_rewards.dart';
-import 'package:point_system/core/data/rewards_provider.dart';
-import 'package:point_system/core/data/rewards_snapshot.dart';
+import 'package:point_system/core/data/initial_member_data.dart';
+import 'package:point_system/core/data/member_data_provider.dart';
+import 'package:point_system/core/data/member_snapshot.dart';
 import 'package:point_system/core/database/app_database.dart';
 import 'package:point_system/core/network/rewards_api.dart';
 import 'package:point_system/core/theme/app_theme.dart';
@@ -32,7 +32,7 @@ void main() {
       );
       addTearDown(container.dispose);
       // Native SQLite I/O runs outside the widget binding's fake clock.
-      await tester.runAsync(() => container.read(rewardsProvider.future));
+      await tester.runAsync(() => container.read(memberDataProvider.future));
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -43,7 +43,7 @@ void main() {
       expect(find.text('1450'), findsOneWidget);
       expect(find.text('320 Points'), findsOneWidget);
 
-      final json = createDemoRewards(DateTime(2026, 4, 5)).toJson()
+      final json = createInitialMemberData(DateTime(2026, 4, 5)).toJson()
         ..['balance'] = 1600;
       json['member'] = {
         ...json['member'] as Map<String, dynamic>,
@@ -61,9 +61,9 @@ void main() {
         },
       ];
       await tester.runAsync(() async {
-        await database.save(RewardsSnapshot.fromJson(json));
+        await database.save(MemberSnapshot.fromJson(json));
         await tester.tap(find.byTooltip('Refresh points'));
-        await container.read(rewardsProvider.future);
+        await container.read(memberDataProvider.future);
       });
       await tester.pumpAndSettle();
       expect(find.text('1600'), findsOneWidget);

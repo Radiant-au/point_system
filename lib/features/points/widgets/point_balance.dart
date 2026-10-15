@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../../core/data/rewards_provider.dart';
+import '../../../core/data/member_data_provider.dart';
 import '../providers/points_provider.dart';
 
 class PointBalance extends ConsumerWidget {
@@ -12,7 +12,7 @@ class PointBalance extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(pointsProvider);
-    final state = ref.watch(rewardsProvider);
+    final state = ref.watch(memberDataProvider);
     final color = onBlue ? Colors.white : AppTheme.blue;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -53,7 +53,7 @@ class PointBalance extends ConsumerWidget {
                 ),
                 onPressed: state.isLoading
                     ? null
-                    : () => ref.read(rewardsProvider.notifier).refresh(),
+                    : () => ref.read(memberDataProvider.notifier).refresh(),
                 icon: state.isLoading
                     ? SizedBox(
                         width: 16,

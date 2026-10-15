@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/data/rewards_provider.dart';
-import '../../../core/widgets/rewards_load_state.dart';
+import '../../../core/data/member_data_provider.dart';
+import '../../../core/widgets/member_data_load_state.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../expiry/screens/expiry_details_screen.dart';
@@ -64,13 +64,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         child: SafeArea(
           bottom: false,
-          child: ref.watch(rewardsProvider).hasValue
+          child: ref.watch(memberDataProvider).hasValue
               ? IndexedStack(
                   index: _showExpiry ? 4 : _selectedTab,
                   children: [
                     CustomScrollView(
                       slivers: [
-                        if (ref.watch(rewardsProvider).value?.usingSavedData ??
+                        if (ref.watch(memberDataProvider).value?.usingSavedData ??
                             false)
                           const SliverToBoxAdapter(
                             child: Padding(
@@ -95,7 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ExpiryDetailsScreen(onBack: _goHome),
                   ],
                 )
-              : const RewardsLoadState(),
+              : const MemberDataLoadState(),
         ),
       ),
       bottomNavigationBar: HomeBottomNavigation(

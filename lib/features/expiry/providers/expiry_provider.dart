@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/data/rewards_provider.dart';
+import '../../../core/data/member_data_provider.dart';
 import '../models/point_expiry_group.dart';
 
 final expiryClockProvider = appClockProvider;
 final expiryGroupsProvider = Provider<List<PointExpiryGroup>?>(
-  (ref) => ref.watch(rewardsProvider).value?.expiryGroups,
+  (ref) => ref.watch(memberDataProvider).value?.expiryGroups,
 );
 
 final expirySummaryProvider = Provider<ExpirySummary?>((ref) {

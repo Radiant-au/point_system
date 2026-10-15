@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/rewards_provider.dart';
+import '../data/member_data_provider.dart';
 
-class RewardsLoadState extends ConsumerWidget {
-  const RewardsLoadState({super.key});
+class MemberDataLoadState extends ConsumerWidget {
+  const MemberDataLoadState({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(rewardsProvider);
+    final state = ref.watch(memberDataProvider);
     return Center(
       child: state.hasError && !state.isLoading
           ? Column(
@@ -16,7 +16,7 @@ class RewardsLoadState extends ConsumerWidget {
               children: [
                 const Text('Could not load rewards.'),
                 TextButton(
-                  onPressed: () => ref.read(rewardsProvider.notifier).refresh(),
+                  onPressed: () => ref.read(memberDataProvider.notifier).refresh(),
                   child: const Text('Retry'),
                 ),
               ],

@@ -5,9 +5,9 @@ import 'package:point_system/core/theme/app_theme.dart';
 import 'package:point_system/features/auth/screens/login_screen.dart';
 import 'package:point_system/features/auth/screens/reset_password_screen.dart';
 import 'package:point_system/features/home/screens/home_screen.dart';
-import 'package:point_system/core/data/rewards_provider.dart';
+import 'package:point_system/core/data/member_data_provider.dart';
 
-import 'support/demo_repository.dart';
+import 'support/demo_member_repository.dart';
 
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -15,10 +15,10 @@ void main() {
   testWidgets('tabs, QR, shared point refresh, back, and sign out work', (
     tester,
   ) async {
-    final repository = DemoRewardsRepository();
+    final repository = DemoMemberRepository();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [rewardsRepositoryProvider.overrideWithValue(repository)],
+        overrides: [memberRepositoryProvider.overrideWithValue(repository)],
         child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),
       ),
     );
@@ -118,8 +118,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            rewardsRepositoryProvider.overrideWithValue(
-              DemoRewardsRepository(),
+            memberRepositoryProvider.overrideWithValue(
+              DemoMemberRepository(),
             ),
           ],
           child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),

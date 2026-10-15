@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/data/member_data_provider.dart';
+import '../../../core/data/initial_member_data.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reward_widgets.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+class ResetPasswordScreen extends ConsumerStatefulWidget {
+  const ResetPasswordScreen({super.key, this.memberId = initialMemberId});
+
+  final String memberId;
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _currentPassword = TextEditingController();
   final _password = TextEditingController();
   final _confirmation = TextEditingController();
   bool _obscurePassword = true;
@@ -24,6 +31,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   void dispose() {
+    _currentPassword.dispose();
     _password.dispose();
     _confirmation.dispose();
     super.dispose();
@@ -33,10 +41,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (_submitting || !_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _submitting = true);
-    // Demo only: replace with an authenticated password-update API call.
-    await Future<void>.delayed(const Duration(milliseconds: 300));
+    final changed = await ref.read(appDatabaseProvider).updatePassword(
+      widget.memberId,
+      _currentPassword.text,
+      _password.text,
+    );
     if (!mounted) return;
     setState(() => _submitting = false);
+    if (!changed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Current password is incorrect')),
+      );
+      return;
+    }
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -94,6 +111,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const Text(
+                      'Current Password',
+                      style: TextStyle(color: Color(0xFF4A5565), fontSize: 12),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _currentPassword,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter current password',
+                      ),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Enter your current password'
+                          : null,
+                    ),
+                    const SizedBox(height: 24),
                     const Text(
                       'New Password',
                       style: TextStyle(color: Color(0xFF4A5565), fontSize: 12),

@@ -2,27 +2,52 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/data/member_data_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../home/screens/home_screen.dart';
 import '../widgets/login_form_card.dart';
 import '../widgets/login_header.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _phone = TextEditingController();
+  final _password = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _submitting = false;
 
-  void _login() {
+  @override
+  void dispose() {
+    _phone.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
+    setState(() => _submitting = true);
+    final valid = await ref.read(appDatabaseProvider).authenticate(
+      _phone.text,
+      _password.text,
+    );
+    if (!mounted) return;
+    setState(() => _submitting = false);
+    if (!valid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number or password is incorrect')),
+      );
+      return;
+    }
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(builder: (_) => const HomeScreen()),
     );
@@ -65,6 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: LoginFormCard(
                               formKey: _formKey,
+                              phoneController: _phone,
+                              passwordController: _password,
                               obscurePassword: _obscurePassword,
                               rememberMe: _rememberMe,
                               onTogglePassword: () => setState(
@@ -72,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               onRememberChanged: (value) =>
                                   setState(() => _rememberMe = value ?? false),
-                              onLogin: _login,
+                              onLogin: _submitting ? null : _login,
                             ),
                           ),
                         ),

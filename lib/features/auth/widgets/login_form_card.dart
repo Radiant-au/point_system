@@ -7,6 +7,8 @@ class LoginFormCard extends StatelessWidget {
   const LoginFormCard({
     super.key,
     required this.formKey,
+    required this.phoneController,
+    required this.passwordController,
     required this.obscurePassword,
     required this.rememberMe,
     required this.onTogglePassword,
@@ -15,11 +17,13 @@ class LoginFormCard extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final TextEditingController phoneController;
+  final TextEditingController passwordController;
   final bool obscurePassword;
   final bool rememberMe;
   final VoidCallback onTogglePassword;
   final ValueChanged<bool?> onRememberChanged;
-  final VoidCallback onLogin;
+  final VoidCallback? onLogin;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +66,7 @@ class LoginFormCard extends StatelessWidget {
             const _FieldLabel('Username'),
             const SizedBox(height: 8),
             TextFormField(
+              controller: phoneController,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
               style: const TextStyle(fontSize: 15),
@@ -85,9 +90,10 @@ class LoginFormCard extends StatelessWidget {
             const _FieldLabel('Password'),
             const SizedBox(height: 8),
             TextFormField(
+              controller: passwordController,
               obscureText: obscurePassword,
               textInputAction: TextInputAction.done,
-              onFieldSubmitted: (_) => onLogin(),
+              onFieldSubmitted: (_) => onLogin?.call(),
               style: const TextStyle(fontSize: 15),
               decoration: InputDecoration(
                 hintText: 'Enter your password',
@@ -168,9 +174,12 @@ class LoginFormCard extends StatelessWidget {
                     ),
                   ),
                   onPressed: onLogin,
-                  child: const Text(
-                    'Log In',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  child: Text(
+                    onLogin == null ? 'Logging in…' : 'Log In',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),

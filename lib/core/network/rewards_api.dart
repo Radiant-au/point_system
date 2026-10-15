@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 
-import '../data/rewards_snapshot.dart';
+import '../data/member_snapshot.dart';
 
 class RewardsApi {
   RewardsApi(this.dio);
   final Dio dio;
   bool get isConfigured => dio.options.baseUrl.isNotEmpty;
 
-  Future<RewardsSnapshot> fetch(String memberId) async {
+  Future<MemberSnapshot> fetch(String memberId) async {
     final response = await dio.get<Object?>(
       'members/${Uri.encodeComponent(memberId)}/rewards',
     );
@@ -15,7 +15,7 @@ class RewardsApi {
     if (body is! Map<String, dynamic>) {
       throw const FormatException('Expected a rewards object');
     }
-    final snapshot = RewardsSnapshot.fromJson(body);
+    final snapshot = MemberSnapshot.fromJson(body);
     if (snapshot.member.id != memberId) {
       throw const FormatException('Unexpected member ID');
     }

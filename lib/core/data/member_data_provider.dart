@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/app_database.dart';
 import '../network/rewards_api.dart';
-import 'demo_rewards.dart';
-import 'rewards_repository.dart';
-import 'rewards_snapshot.dart';
+import 'initial_member_data.dart';
+import 'member_repository.dart';
+import 'member_snapshot.dart';
 
 final appClockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -22,23 +22,23 @@ final dioProvider = Provider<Dio>((ref) {
   return dio;
 });
 
-final rewardsRepositoryProvider = Provider<RewardsRepository>(
-  (ref) => RewardsRepository(
+final memberRepositoryProvider = Provider<MemberRepository>(
+  (ref) => MemberRepository(
     ref.watch(appDatabaseProvider),
     RewardsApi(ref.watch(dioProvider)),
-    const String.fromEnvironment('API_MEMBER_ID', defaultValue: demoMemberId),
+    const String.fromEnvironment('API_MEMBER_ID', defaultValue: initialMemberId),
   ),
 );
 
-final rewardsProvider = AsyncNotifierProvider<RewardsNotifier, RewardsSnapshot>(
-  RewardsNotifier.new,
+final memberDataProvider = AsyncNotifierProvider<MemberDataNotifier, MemberSnapshot>(
+  MemberDataNotifier.new,
   retry: (retryCount, error) => null,
 );
 
-class RewardsNotifier extends AsyncNotifier<RewardsSnapshot> {
+class MemberDataNotifier extends AsyncNotifier<MemberSnapshot> {
   @override
-  Future<RewardsSnapshot> build() =>
-      ref.watch(rewardsRepositoryProvider).load();
+  Future<MemberSnapshot> build() =>
+      ref.watch(memberRepositoryProvider).load();
 
   Future<void> refresh() async {
     if (state.isLoading) return;

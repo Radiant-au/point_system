@@ -2,15 +2,15 @@ import 'package:dio/dio.dart';
 
 import '../database/app_database.dart';
 import '../network/rewards_api.dart';
-import 'rewards_snapshot.dart';
+import 'member_snapshot.dart';
 
-class RewardsRepository {
-  RewardsRepository(this.database, this.api, this.memberId);
+class MemberRepository {
+  MemberRepository(this.database, this.api, this.memberId);
   final AppDatabase database;
   final RewardsApi api;
   final String memberId;
 
-  Future<RewardsSnapshot> load() async {
+  Future<MemberSnapshot> load() async {
     final saved = await database.read(memberId);
     if (!api.isConfigured) {
       if (saved == null) throw StateError('No saved rewards for this member');

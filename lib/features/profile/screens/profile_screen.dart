@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/rewards_load_state.dart';
+import '../../../core/widgets/member_data_load_state.dart';
 import '../../../core/widgets/reward_widgets.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../auth/screens/reset_password_screen.dart';
 import '../../member/providers/member_provider.dart';
-import '../../../core/data/rewards_provider.dart';
+import '../../../core/data/member_data_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -15,7 +15,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final member = ref.watch(memberProvider);
-    if (member == null) return const RewardsLoadState();
+    if (member == null) return const MemberDataLoadState();
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -90,7 +90,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => const ResetPasswordScreen(),
+                      builder: (_) => ResetPasswordScreen(memberId: member.id),
                     ),
                   ),
                 ),
@@ -118,7 +118,7 @@ class ProfileScreen extends ConsumerWidget {
                     style: TextStyle(color: Colors.red, fontSize: 14),
                   ),
                   onTap: () {
-                    ref.invalidate(rewardsProvider);
+                    ref.invalidate(memberDataProvider);
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute<void>(
                         builder: (_) => const LoginScreen(),

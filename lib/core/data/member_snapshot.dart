@@ -2,8 +2,8 @@ import '../../features/expiry/models/point_expiry_group.dart';
 import '../../features/history/models/point_transaction.dart';
 import '../../features/member/models/member.dart';
 
-class RewardsSnapshot {
-  RewardsSnapshot({
+class MemberSnapshot {
+  MemberSnapshot({
     required this.member,
     required this.balance,
     required List<PointTransaction> transactions,
@@ -18,7 +18,7 @@ class RewardsSnapshot {
   final List<PointExpiryGroup> expiryGroups;
   final bool usingSavedData;
 
-  RewardsSnapshot asSavedData() => RewardsSnapshot(
+  MemberSnapshot asSavedData() => MemberSnapshot(
     member: member,
     balance: balance,
     transactions: transactions,
@@ -27,7 +27,7 @@ class RewardsSnapshot {
   );
 
   // Validate the entire response before replacing any rows in SQLite.
-  factory RewardsSnapshot.fromJson(Map<String, dynamic> json) {
+  factory MemberSnapshot.fromJson(Map<String, dynamic> json) {
     final member = _object(json['member'], 'member');
     final balance = _integer(json['balance'], 'balance');
     if (balance < 0) throw const FormatException('Balance cannot be negative');
@@ -72,7 +72,7 @@ class RewardsSnapshot {
     if (groups.fold(0, (sum, group) => sum + group.points) > balance) {
       throw const FormatException('Expiry groups exceed the point balance');
     }
-    return RewardsSnapshot(
+    return MemberSnapshot(
       member: Member(
         id: _string(member['id'], 'member.id'),
         name: _string(member['name'], 'name'),
