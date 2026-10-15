@@ -13,7 +13,7 @@ class MemberRepository {
   Future<MemberSnapshot> load() async {
     final saved = await database.read(memberId);
     if (!api.isConfigured) {
-      if (saved == null) throw StateError('No saved rewards for this member');
+      if (saved   == null) throw StateError('No saved rewards for this member');
       return saved;
     }
     try {
