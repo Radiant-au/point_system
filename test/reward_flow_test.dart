@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:point_system/core/data/member_data_provider.dart';
+import 'package:point_system/core/network/rewards_api.dart';
 import 'package:point_system/core/theme/app_theme.dart';
 import 'package:point_system/features/auth/screens/login_screen.dart';
 import 'package:point_system/features/auth/screens/reset_password_screen.dart';
 import 'package:point_system/features/home/screens/home_screen.dart';
-import 'package:point_system/core/data/member_data_provider.dart';
+
+import 'database_api_test.dart' show TestAdapter, jsonResponse;
 
 import 'support/demo_member_repository.dart';
 
@@ -67,18 +70,24 @@ void main() {
   testWidgets('reset validates requirements and confirmation before success', (
     tester,
   ) async {
+    final dio = createDio('https://example.test/api/');
+    dio.httpClientAdapter = TestAdapter((_) async => jsonResponse({}));
+    addTearDown(() => dio.close(force: true));
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: TextButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const ResetPasswordScreen(),
+      ProviderScope(
+        overrides: [dioProvider.overrideWithValue(dio)],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ResetPasswordScreen(),
+                  ),
                 ),
+                child: const Text('Open reset'),
               ),
-              child: const Text('Open reset'),
             ),
           ),
         ),
@@ -92,19 +101,20 @@ void main() {
     expect(find.text('Confirm your password'), findsOneWidget);
 
     final fields = find.byType(TextFormField);
-    await tester.enterText(fields.at(0), 'Password1');
-    await tester.enterText(fields.at(1), 'Password2');
+    await tester.enterText(fields.at(0), 'CurrentPassword1');
+    await tester.enterText(fields.at(1), 'Password1');
+    await tester.enterText(fields.at(2), 'Password2');
     await tester.tap(find.text('Update Password'));
     await tester.pumpAndSettle();
     expect(find.text('Passwords do not match'), findsOneWidget);
-    await tester.enterText(fields.at(1), 'Password1');
+    await tester.enterText(fields.at(2), 'Password1');
     await tester.tap(find.text('Update Password'));
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
     expect(find.text('Your password is updated successfully.'), findsOneWidget);
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-    expect(find.text('Open reset'), findsOneWidget);
+    expect(find.byType(LoginScreen), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

@@ -6,6 +6,7 @@ import 'package:point_system/core/data/member_data_provider.dart';
 import 'package:point_system/core/data/member_snapshot.dart';
 import 'package:point_system/core/database/app_database.dart';
 import 'package:point_system/core/network/rewards_api.dart';
+import 'package:point_system/core/network/auth_session.dart';
 import 'package:point_system/core/theme/app_theme.dart';
 import 'package:point_system/features/home/screens/home_screen.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -29,6 +30,9 @@ void main() {
           appDatabaseProvider.overrideWithValue(database),
           appClockProvider.overrideWithValue(() => DateTime(2026, 4, 5)),
           dioProvider.overrideWithValue(dio),
+          authSessionProvider.overrideWithValue(
+            AuthSession()..memberId = initialMemberId,
+          ),
         ],
       );
       addTearDown(container.dispose);
