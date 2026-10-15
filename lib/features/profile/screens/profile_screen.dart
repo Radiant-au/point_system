@@ -8,6 +8,7 @@ import '../../auth/screens/login_screen.dart';
 import '../../auth/screens/reset_password_screen.dart';
 import '../../member/providers/member_provider.dart';
 import '../../../core/data/member_data_provider.dart';
+import '../../../core/network/auth_session.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -117,8 +118,10 @@ class ProfileScreen extends ConsumerWidget {
                     'Sign Out',
                     style: TextStyle(color: Colors.red, fontSize: 14),
                   ),
-                  onTap: () {
+                  onTap: () async {
+                    await ref.read(authSessionProvider).logout(ref.read(dioProvider));
                     ref.invalidate(memberDataProvider);
+                    if (!context.mounted) return;
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute<void>(
                         builder: (_) => const LoginScreen(),

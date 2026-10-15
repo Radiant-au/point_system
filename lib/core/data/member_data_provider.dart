@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/app_database.dart';
 import '../network/rewards_api.dart';
-import 'initial_member_data.dart';
+import '../network/auth_session.dart';
 import 'member_repository.dart';
 import 'member_snapshot.dart';
 
@@ -17,7 +17,8 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 });
 
 final dioProvider = Provider<Dio>((ref) {
-  final dio = createDio(const String.fromEnvironment('API_BASE_URL'));
+  final dio = createDio(const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://10.0.2.2:5297/api/'));
+  ref.watch(authSessionProvider).attach(dio);
   ref.onDispose(() => dio.close(force: true));
   return dio;
 });
@@ -26,7 +27,7 @@ final memberRepositoryProvider = Provider<MemberRepository>(
   (ref) => MemberRepository(
     ref.watch(appDatabaseProvider),
     RewardsApi(ref.watch(dioProvider)),
-    const String.fromEnvironment('API_MEMBER_ID', defaultValue: initialMemberId),
+    ref.watch(authSessionProvider).memberId ?? (throw StateError('Please sign in')),
   ),
 );
 

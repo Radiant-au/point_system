@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/data/member_data_provider.dart';
+import '../../../core/network/auth_session.dart';
+import 'login_screen.dart';
 import '../../../core/data/initial_member_data.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reward_widgets.dart';
@@ -41,19 +43,22 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     if (_submitting || !_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _submitting = true);
-    final changed = await ref.read(appDatabaseProvider).updatePassword(
-      widget.memberId,
-      _currentPassword.text,
-      _password.text,
-    );
-    if (!mounted) return;
-    setState(() => _submitting = false);
-    if (!changed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Current password is incorrect')),
+    try {
+      await ref.read(dioProvider).post<void>('auth/change-password', data: {
+        'currentPassword': _currentPassword.text,
+        'newPassword': _password.text,
+      });
+      ref.read(authSessionProvider).clear();
+      ref.invalidate(memberDataProvider);
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(apiErrorMessage(error))),
       );
       return;
+    } finally {
+      if (mounted) setState(() => _submitting = false);
     }
+    if (!mounted) return;
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -91,7 +96,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ),
       ),
     );
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const LoginScreen()), (_) => false);
   }
 
   @override

@@ -52,6 +52,7 @@ void main() {
     directory = await Directory.systemTemp.createTemp('galaxy-rewards-test-');
     filePath = '${directory.path}/rewards.db';
     database = AppDatabase(
+        seedDemoData: true,
       factory: databaseFactoryFfiNoIsolate,
       path: filePath,
       clock: () => DateTime(2026, 4, 5),
@@ -77,6 +78,7 @@ void main() {
       await database.save(MemberSnapshot.fromJson(json));
       await database.close();
       database = AppDatabase(
+        seedDemoData: true,
         factory: databaseFactoryFfiNoIsolate,
         path: filePath,
         clock: () => DateTime(2027, 1, 1),

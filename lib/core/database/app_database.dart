@@ -7,8 +7,9 @@ import 'database_location.dart';
 import 'password_hash.dart';
 
 class AppDatabase {
-  AppDatabase({this.factory, this.path, DateTime Function()? clock})
+  AppDatabase({this.factory, this.path, this.seedDemoData = false, DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
+  final bool seedDemoData;
   final DatabaseFactory? factory;
   final String? path;
   final DateTime Function() _clock;
@@ -39,6 +40,7 @@ class AppDatabase {
           for (final sql in schema.split(';')) {
             if (sql.trim().isNotEmpty) await db.execute(sql);
           }
+          if (!seedDemoData) return;
           // onCreate already runs in a transaction. Seed only on first creation.
           await _write(db, createInitialMemberData(_clock()));
           final password = await hashPassword(initialPassword);

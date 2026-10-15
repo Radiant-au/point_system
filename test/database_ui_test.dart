@@ -16,6 +16,7 @@ void main() {
     'SQLite data reaches Home, Profile, History, and expiry through Riverpod',
     (tester) async {
       final database = AppDatabase(
+        seedDemoData: true,
         factory: databaseFactoryFfiNoIsolate,
         path: inMemoryDatabasePath,
         clock: () => DateTime(2026, 4, 5),
