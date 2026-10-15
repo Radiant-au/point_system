@@ -38,15 +38,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     FocusScope.of(context).unfocus();
     setState(() => _submitting = true);
     try {
-      await ref.read(authSessionProvider).login(ref.read(dioProvider),
-        _phone.text, _password.text, _rememberMe);
+      await ref
+          .read(authSessionProvider)
+          .login(
+            ref.read(dioProvider),
+            _phone.text,
+            _password.text,
+            _rememberMe,
+          );
       ref.invalidate(memberRepositoryProvider);
       ref.invalidate(memberDataProvider);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(apiErrorMessage(error))),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(apiErrorMessage(error))));
       return;
     } finally {
       if (mounted) setState(() => _submitting = false);

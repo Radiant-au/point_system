@@ -70,7 +70,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     CustomScrollView(
                       slivers: [
-                        if (ref.watch(memberDataProvider).value?.usingSavedData ??
+                        if (ref
+                                .watch(memberDataProvider)
+                                .value
+                                ?.usingSavedData ??
                             false)
                           const SliverToBoxAdapter(
                             child: Padding(

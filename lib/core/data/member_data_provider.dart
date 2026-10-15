@@ -17,7 +17,12 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 });
 
 final dioProvider = Provider<Dio>((ref) {
-  final dio = createDio(const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://10.0.2.2:5297/api/'));
+  final dio = createDio(
+    const String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'http://10.0.2.2:5297/api/',
+    ),
+  );
   ref.watch(authSessionProvider).attach(dio);
   ref.onDispose(() => dio.close(force: true));
   return dio;
@@ -27,19 +32,20 @@ final memberRepositoryProvider = Provider<MemberRepository>(
   (ref) => MemberRepository(
     ref.watch(appDatabaseProvider),
     RewardsApi(ref.watch(dioProvider)),
-    ref.watch(authSessionProvider).memberId ?? (throw StateError('Please sign in')),
+    ref.watch(authSessionProvider).memberId ??
+        (throw StateError('Please sign in')),
   ),
 );
 
-final memberDataProvider = AsyncNotifierProvider<MemberDataNotifier, MemberSnapshot>(
-  MemberDataNotifier.new,
-  retry: (retryCount, error) => null,
-);
+final memberDataProvider =
+    AsyncNotifierProvider<MemberDataNotifier, MemberSnapshot>(
+      MemberDataNotifier.new,
+      retry: (retryCount, error) => null,
+    );
 
 class MemberDataNotifier extends AsyncNotifier<MemberSnapshot> {
   @override
-  Future<MemberSnapshot> build() =>
-      ref.watch(memberRepositoryProvider).load();
+  Future<MemberSnapshot> build() => ref.watch(memberRepositoryProvider).load();
 
   Future<void> refresh() async {
     if (state.isLoading) return;

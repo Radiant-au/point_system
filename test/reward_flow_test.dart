@@ -118,9 +118,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            memberRepositoryProvider.overrideWithValue(
-              DemoMemberRepository(),
-            ),
+            memberRepositoryProvider.overrideWithValue(DemoMemberRepository()),
           ],
           child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),
         ),

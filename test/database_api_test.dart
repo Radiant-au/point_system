@@ -52,7 +52,7 @@ void main() {
     directory = await Directory.systemTemp.createTemp('galaxy-rewards-test-');
     filePath = '${directory.path}/rewards.db';
     database = AppDatabase(
-        seedDemoData: true,
+      seedDemoData: true,
       factory: databaseFactoryFfiNoIsolate,
       path: filePath,
       clock: () => DateTime(2026, 4, 5),
@@ -246,7 +246,10 @@ void main() {
         initialMemberId,
       );
       final response = await repository.load();
-      expect(await requestedPath.future, '/api/members/$initialMemberId/rewards');
+      expect(
+        await requestedPath.future,
+        '/api/members/$initialMemberId/rewards',
+      );
       expect(response.balance, 1650);
       expect((await database.read(initialMemberId))!.balance, 1650);
     }, LocalHttpOverrides()),

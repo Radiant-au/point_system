@@ -119,7 +119,9 @@ class ProfileScreen extends ConsumerWidget {
                     style: TextStyle(color: Colors.red, fontSize: 14),
                   ),
                   onTap: () async {
-                    await ref.read(authSessionProvider).logout(ref.read(dioProvider));
+                    await ref
+                        .read(authSessionProvider)
+                        .logout(ref.read(dioProvider));
                     ref.invalidate(memberDataProvider);
                     if (!context.mounted) return;
                     Navigator.of(context).pushAndRemoveUntil(

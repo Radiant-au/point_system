@@ -10,21 +10,32 @@ class AuthSession {
   DateTime? _expiresAt;
 
   void attach(Dio dio) {
-    dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
-      if (_token != null && _expiresAt!.isAfter(DateTime.now())) {
-        options.headers['Authorization'] = 'Bearer $_token';
-      }
-      handler.next(options);
-    }, onError: (error, handler) {
-      if (error.response?.statusCode == 401) clear();
-      handler.next(error);
-    }));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (_token != null && _expiresAt!.isAfter(DateTime.now())) {
+            options.headers['Authorization'] = 'Bearer $_token';
+          }
+          handler.next(options);
+        },
+        onError: (error, handler) {
+          if (error.response?.statusCode == 401) clear();
+          handler.next(error);
+        },
+      ),
+    );
   }
 
-  Future<void> login(Dio dio, String phone, String password, bool rememberMe) async {
-    final response = await dio.post<Map<String, dynamic>>('auth/login', data: {
-      'phone': phone, 'password': password, 'rememberMe': rememberMe,
-    });
+  Future<void> login(
+    Dio dio,
+    String phone,
+    String password,
+    bool rememberMe,
+  ) async {
+    final response = await dio.post<Map<String, dynamic>>(
+      'auth/login',
+      data: {'phone': phone, 'password': password, 'rememberMe': rememberMe},
+    );
     final body = response.data!;
     final token = body['accessToken'] as String;
     final id = (body['member'] as Map<String, dynamic>)['id'] as String;
@@ -44,7 +55,11 @@ class AuthSession {
     }
   }
 
-  void clear() { memberId = null; _token = null; _expiresAt = null; }
+  void clear() {
+    memberId = null;
+    _token = null;
+    _expiresAt = null;
+  }
 }
 
 String apiErrorMessage(Object error) {

@@ -44,16 +44,21 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     FocusScope.of(context).unfocus();
     setState(() => _submitting = true);
     try {
-      await ref.read(dioProvider).post<void>('auth/change-password', data: {
-        'currentPassword': _currentPassword.text,
-        'newPassword': _password.text,
-      });
+      await ref
+          .read(dioProvider)
+          .post<void>(
+            'auth/change-password',
+            data: {
+              'currentPassword': _currentPassword.text,
+              'newPassword': _password.text,
+            },
+          );
       ref.read(authSessionProvider).clear();
       ref.invalidate(memberDataProvider);
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(apiErrorMessage(error))),
-      );
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(apiErrorMessage(error))));
       return;
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -96,8 +101,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ),
       ),
     );
-    if (mounted) Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const LoginScreen()), (_) => false);
+    if (mounted)
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+        (_) => false,
+      );
   }
 
   @override
