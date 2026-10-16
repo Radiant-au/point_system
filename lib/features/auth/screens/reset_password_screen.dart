@@ -4,14 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/data/member_data_provider.dart';
 import '../../../core/network/auth_session.dart';
 import 'login_screen.dart';
-import '../../../core/data/initial_member_data.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/reward_widgets.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
-  const ResetPasswordScreen({super.key, this.memberId = initialMemberId});
-
-  final String memberId;
+  const ResetPasswordScreen({super.key});
 
   @override
   ConsumerState<ResetPasswordScreen> createState() =>

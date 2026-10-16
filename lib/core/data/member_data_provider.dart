@@ -11,7 +11,7 @@ import 'member_snapshot.dart';
 
 final appClockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
-  final database = AppDatabase(clock: ref.watch(appClockProvider));
+  final database = AppDatabase();
   ref.onDispose(() => unawaited(database.close()));
   return database;
 });
@@ -20,7 +20,7 @@ final dioProvider = Provider<Dio>((ref) {
   final dio = createDio(
     const String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'http://10.0.2.2:5297/api/',
+      defaultValue: 'http://192.168.89.228/api/',
     ),
   );
   ref.watch(authSessionProvider).attach(dio);

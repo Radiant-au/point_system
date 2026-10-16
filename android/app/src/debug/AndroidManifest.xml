@@ -6,6 +6,5 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Allow a local HTTP development API in debug builds only. -->
     <application android:usesCleartextTraffic="true"/>
-    <application android:usesCleartextTraffic="true" />
 </manifest>
 

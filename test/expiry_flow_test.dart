@@ -6,11 +6,11 @@ import 'package:point_system/features/expiry/models/point_expiry_group.dart';
 import 'package:point_system/features/expiry/providers/expiry_provider.dart';
 import 'package:point_system/core/data/member_data_provider.dart';
 
-import 'support/demo_member_repository.dart';
+import 'support/member_repository_fixture.dart';
 
 import 'package:point_system/features/home/screens/home_screen.dart';
 
-Widget app(DemoMemberRepository repository, {double textScale = 1}) =>
+Widget app(FixtureMemberRepository repository, {double textScale = 1}) =>
     ProviderScope(
       overrides: [
         memberRepositoryProvider.overrideWithValue(repository),
@@ -31,7 +31,7 @@ void main() {
   testWidgets(
     'Home opens expiry details, refresh updates both views, and empty state returns',
     (tester) async {
-      final repository = DemoMemberRepository();
+      final repository = FixtureMemberRepository();
       await tester.pumpWidget(app(repository));
       await tester.pumpAndSettle();
       expect(find.text('320 Points'), findsOneWidget);
@@ -72,7 +72,7 @@ void main() {
   );
 
   testWidgets('initial load error offers retry and recovers', (tester) async {
-    final repository = DemoMemberRepository()..offline = true;
+    final repository = FixtureMemberRepository()..offline = true;
     await tester.pumpWidget(app(repository));
     await tester.pumpAndSettle();
     expect(find.text('Could not load rewards.'), findsOneWidget);
@@ -95,7 +95,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(app(DemoMemberRepository(), textScale: 1.3));
+      await tester.pumpWidget(app(FixtureMemberRepository(), textScale: 1.3));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('home-expiry-card')));
       await tester.pumpAndSettle();

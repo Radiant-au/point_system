@@ -4,9 +4,7 @@ CREATE TABLE members (
   name TEXT NOT NULL,
   phone TEXT NOT NULL,
   membership_type TEXT NOT NULL,
-  points_balance INTEGER NOT NULL CHECK (typeof(points_balance) = 'integer' AND points_balance >= 0),
-  password_salt TEXT,
-  password_hash TEXT
+  points_balance INTEGER NOT NULL CHECK (typeof(points_balance) = 'integer' AND points_balance >= 0)
 );
 
 CREATE TABLE point_transactions (

@@ -10,7 +10,7 @@ import 'package:point_system/features/home/screens/home_screen.dart';
 
 import 'database_api_test.dart' show TestAdapter, jsonResponse;
 
-import 'support/demo_member_repository.dart';
+import 'support/member_repository_fixture.dart';
 
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -18,7 +18,7 @@ void main() {
   testWidgets('tabs, QR, shared point refresh, back, and sign out work', (
     tester,
   ) async {
-    final repository = DemoMemberRepository();
+    final repository = FixtureMemberRepository();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [memberRepositoryProvider.overrideWithValue(repository)],
@@ -42,7 +42,7 @@ void main() {
     expect(find.byType(QrImageView), findsOneWidget);
     expect(
       tester.widget<QrImageView>(find.byType(QrImageView)).semanticsLabel,
-      'Checkout QR code for member 1900190000956102',
+      'Checkout QR code for member test-member-1',
     );
     repository.balance = 1520;
     await tester.ensureVisible(find.byTooltip('Refresh points'));
@@ -128,7 +128,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            memberRepositoryProvider.overrideWithValue(DemoMemberRepository()),
+            memberRepositoryProvider.overrideWithValue(
+              FixtureMemberRepository(),
+            ),
           ],
           child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),
         ),

@@ -91,7 +91,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => ResetPasswordScreen(memberId: member.id),
+                      builder: (_) => const ResetPasswordScreen(),
                     ),
                   ),
                 ),
